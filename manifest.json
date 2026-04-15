@@ -1,0 +1,19 @@
+{
+  "name": "노동숲 — QUETTA 업무 분장",
+  "short_name": "노동숲",
+  "description": "노동해요! 동물의 숲 — 강남대성기숙 QUETTA",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#3B6B4E",
+  "theme_color": "#3B6B4E",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "lang": "ko"
+}
