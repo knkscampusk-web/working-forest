@@ -351,14 +351,16 @@ html,body{margin:0;padding:0;width:100%;height:100%}
 /* 모바일 반응형 */
 @media(max-width:768px){
   .mob-hide{display:none!important}
-  #wb{border-radius:0;border:none;height:100dvh;overflow:hidden}
-  #mobile-day-view{overflow:hidden}
-  #mob-content{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;
-    flex:1!important;min-height:0!important;
-    max-height:calc(100dvh - 110px)!important;
-    padding-bottom:60px!important}
-  /* 헤더 - 찌그러짐 방지 */
-  .wbh{padding:8px 10px;min-height:50px;flex-wrap:nowrap;gap:4px;overflow:hidden}
+  /* ── 핵심: 모바일은 #wb 고정 헤더 + 본문 스크롤 구조 ── */
+  html,body{height:100%;overflow:hidden}
+  #wb{
+    border-radius:0;border:none;
+    position:fixed;top:0;left:0;right:0;bottom:0;
+    display:flex;flex-direction:column;
+    overflow:hidden;height:100dvh;
+  }
+  /* 헤더 고정 */
+  .wbh{padding:8px 10px;min-height:50px;flex-wrap:nowrap;gap:4px;flex-shrink:0}
   .app-logo{gap:6px;flex-shrink:0}
   .app-logo-icon{font-size:20px;flex-shrink:0}
   .app-logo-main{font-size:18px}
@@ -370,22 +372,38 @@ html,body{margin:0;padding:0;width:100%;height:100%}
   .nb{width:26px;height:26px;font-size:14px;flex-shrink:0}
   .tdb{font-size:10px;padding:4px 7px;flex-shrink:0}
   .import-btn{display:none}
-  /* 등록당번 숨김 */
   .duty-wrap{display:none!important}
-  /* 공지 버튼 축소 */
   .board-btn{padding:5px 8px;font-size:12px}
   .board-btn span.btn-txt{display:none}
   .vsw{display:none}
-  /* 설정 버튼 */
   .settings-btn{width:26px;height:26px;font-size:13px}
-  /* 모바일에서 주간 테이블 숨기고 일간 뷰 표시 */
+  /* 주간/월간 숨김 */
   #sv{display:none!important}
-  #mv{display:none}
-  #mobile-day-view{display:flex!important}
+  #mv{display:none!important}
+  /* 모바일 일간 뷰 */
+  #mobile-day-view{
+    display:flex!important;
+    flex-direction:column;
+    flex:1;
+    overflow:hidden;
+    min-height:0;
+  }
+  /* 날짜 네비 고정 */
+  #mob-date-nav{flex-shrink:0}
+  /* 스크롤 영역 - 핵심 */
+  #mob-content{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    overflow-y:scroll;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-y:contain;
+    padding:10px 12px 80px;
+  }
   /* 모달 */
   .mod{width:100%;max-width:100%;max-height:96dvh;border-radius:16px 16px 0 0;position:fixed;bottom:0;left:0;right:0;margin:0}
   .mbo{align-items:flex-end;border-radius:0}
-  /* 설정 팝업 */
   .settings-pop{width:calc(100vw - 28px);right:8px}
 }
 </style>
@@ -506,7 +524,7 @@ html,body{margin:0;padding:0;width:100%;height:100%}
       <button onclick="mobNext()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--forest);padding:4px 8px;font-family:inherit">›</button>
     </div>
     <!-- 멤버별 업무 목록 -->
-    <div id="mob-content" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 60px;display:flex;flex-direction:column;gap:10px;min-height:0"></div>
+    <div id="mob-content"></div>
 
   <!-- 업무 모달 -->
   <div class="mbo" id="mbo">
