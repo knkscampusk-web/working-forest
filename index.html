@@ -346,6 +346,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
 .notice-badge{position:absolute;top:-4px;right:-4px;background:#EF4444;color:#fff;font-size:9px;font-weight:700;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-family:inherit}
 /* 모바일 반응형 */
 @media(max-width:768px){
+  .mob-hide{display:none!important}
   #wb{border-radius:0;border:none;height:100dvh}
   /* 헤더 */
   .wbh{padding:8px 12px;min-height:50px;flex-wrap:nowrap;gap:6px}
@@ -424,8 +425,8 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
     </div>
     <div class="tbr">
       <div class="vsw"><button class="vb on" data-v="week">주</button><button class="vb" data-v="month">월</button></div>
-      <button class="import-btn" onclick="document.getElementById('file-cur').click()">📦 올해</button>
-      <button class="import-btn" onclick="document.getElementById('file-ly').click()">🗂 작년</button>
+      <button class="import-btn mob-hide" onclick="document.getElementById('file-cur').click()">📦 올해</button>
+      <button class="import-btn mob-hide" onclick="document.getElementById('file-ly').click()">🗂 작년</button>
       <button class="board-btn" id="board-btn" onclick="toggleNoticeModal()">📋 <span class="btn-txt">공지</span><span class="notice-badge" id="notice-badge" style="display:none"></span></button>
       <button class="settings-btn" id="settings-btn">🌿</button>
       <div id="user-badge" style="display:none;align-items:center;gap:7px;padding:4px 10px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:20px">
@@ -1330,6 +1331,9 @@ function renderAll(){
   view==='week'?renderWeek():renderMonth();
 }
 
+// 모바일 접힘 상태 관리
+const mobCollapsed={};
+
 function renderMobileDay(){
   document.getElementById('sv').style.display='none';
   document.getElementById('mv').style.display='none';
@@ -1337,15 +1341,12 @@ function renderMobileDay(){
   const ds=fmt(mobAnchor);
   const d=mobAnchor;
   const dow=['일','월','화','수','목','금','토'][d.getDay()];
-  const isT=ds===TS;
-  const isHol=HOLIDAYS.has(ds)||d.getDay()===0;
-  const isSat=d.getDay()===6;
+  const isT=ds===TS,isHol=HOLIDAYS.has(ds)||d.getDay()===0,isSat=d.getDay()===6;
   const color=isT?'var(--today-border)':isHol?'#C0392B':isSat?'#2980B9':'var(--text)';
   document.getElementById('mob-date-label').innerHTML=
     `<span style="color:${color};font-weight:700">${d.getMonth()+1}월 ${d.getDate()}일 (${dow})</span>`+
     (isT?'<span style="background:var(--today-border);color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;margin-left:6px">오늘</span>':'');
 
-  // 날짜 메모
   const notes=dayNotes[ds]||[];
   const notesHtml=notes.length?`<div style="background:rgba(59,107,78,.08);border-radius:8px;padding:7px 11px;font-size:12px;color:var(--forest);margin-bottom:8px">${notes.map(n=>'🗓 '+esc(n)).join('<br>')}</div>`:'';
 
@@ -1358,29 +1359,52 @@ function renderMobileDay(){
     const evs=getT(m.id,ds);
     const isOnLeave=(leaveData[ds]||[]).includes(m.id);
     const isMe=m.id===myMidNow;
+    // 내꺼는 기본 펼침, 남은 기본 접힘
+    if(mobCollapsed[m.id]===undefined) mobCollapsed[m.id]=!isMe;
+    const collapsed=mobCollapsed[m.id];
+
     const cards=evs.map(ev=>{
       const from=ev.fromMid?getM(ev.fromMid):null;
       const dlgAt=ev.delegatedAt?fmtDlgAt(ev.delegatedAt):'';
-      return`<div class="tk" style="${isMe?'cursor:pointer':'cursor:default'}" onclick="${isMe?`openEdit('${m.id}','${ds}','${ev.id}')`:''}" >
+      return`<div class="tk" onclick="${isMe?`openEdit('${m.id}','${ds}','${ev.id}')`:''}" style="cursor:${isMe?'pointer':'default'}">
         <div class="tkc ${ev.done?'dn':''}" style="border-color:${m.color};background:${ev.done?m.color:'transparent'}" onclick="event.stopPropagation();toggleT('${m.id}','${ds}','${ev.id}')">${ev.done?'✓':''}</div>
-        <div class="tk-body">
+        <div class="tk-body" style="overflow:hidden">
           <div class="tkt ${ev.done?'dn':''}">${escLink(ev.text)}${ev.star?' ⭐':''}</div>
           ${ev.note?`<div class="tk-note">🍃 ${esc(ev.note)}</div>`:''}
           ${from?`<div class="from-badge" style="margin-top:3px">${from.emoji} ${from.name}${dlgAt?' · '+dlgAt:''}</div>`:''}
         </div>
       </div>`;
     }).join('');
+
+    // 접힌 상태: 헤더만 + 업무수 뱃지
+    const doneCount=evs.filter(t=>t.done).length;
+    const badge=evs.length?`<span style="font-size:10px;background:${m.color}22;color:${m.color};padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px">${doneCount}/${evs.length}</span>`:'';
+
     html+=`<div style="background:#FEFCF8;border:1.5px solid ${isMe?m.color:'var(--tan)'};border-radius:12px;overflow:hidden;${isOnLeave?'opacity:.6':''}">
-      <div style="display:flex;align-items:center;gap:9px;padding:8px 12px;background:${isMe?m.color+'18':'var(--sand)'};border-bottom:1px solid var(--tan)">
-        <div style="width:30px;height:30px;border-radius:50%;background:${m.color}25;border:2px solid ${m.color}60;display:flex;align-items:center;justify-content:center;font-size:16px">${m.emoji}</div>
-        <div style="font-size:13px;font-weight:700;color:var(--text);flex:1">${m.name}${isMe?'<span style="font-size:9px;background:'+m.color+';color:#fff;padding:1px 5px;border-radius:6px;margin-left:5px">나</span>':''}</div>
-        ${isOnLeave?'<span style="font-size:10px;background:rgba(150,150,150,.2);padding:2px 7px;border-radius:8px;color:#666">🏖️ 연차</span>':''}
-        ${isMe?`<button onclick="openMb('${m.id}','${ds}')" style="background:var(--forest);color:#F5EFE0;border:none;border-radius:14px;padding:5px 11px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">+ 추가</button>`:''}
+      <div onclick="mobToggle('${m.id}')" style="display:flex;align-items:center;gap:9px;padding:10px 12px;background:${isMe?m.color+'15':'var(--sand)'};cursor:pointer;user-select:none;-webkit-user-select:none">
+        <div style="width:32px;height:32px;border-radius:50%;background:${m.color}25;border:2px solid ${m.color}60;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">${m.emoji}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);flex:1;display:flex;align-items:center;flex-wrap:wrap;gap:4px">
+          ${m.name}
+          ${isMe?`<span style="font-size:9px;background:${m.color};color:#fff;padding:1px 5px;border-radius:6px">나</span>`:''}
+          ${badge}
+          ${isOnLeave?'<span style="font-size:10px;background:rgba(150,150,150,.2);padding:1px 6px;border-radius:8px;color:#666">🏖️</span>':''}
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          ${isMe?`<button onclick="event.stopPropagation();openMb('${m.id}','${ds}')" style="background:var(--forest);color:#F5EFE0;border:none;border-radius:12px;padding:5px 11px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">+ 추가</button>`:''}
+          <span style="color:var(--text-f);font-size:14px;transition:transform .2s;display:inline-block;transform:rotate(${collapsed?0:180}deg)">▾</span>
+        </div>
       </div>
-      <div style="padding:8px 10px">${cards||`<div style="font-size:11px;color:var(--text-f);padding:4px 2px;text-align:center">🌱</div>`}</div>
+      ${collapsed?'':
+        `<div style="padding:8px 10px">${cards||`<div style="font-size:11px;color:var(--text-f);padding:6px 2px;text-align:center">🌱 업무 없음</div>`}</div>`
+      }
     </div>`;
   });
   document.getElementById('mob-content').innerHTML=html;
+}
+
+function mobToggle(mid){
+  mobCollapsed[mid]=!mobCollapsed[mid];
+  renderAll();
 }
 
 function mobPrev(){mobAnchor=addD(mobAnchor,-1);renderAll();}
