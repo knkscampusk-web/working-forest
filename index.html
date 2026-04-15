@@ -497,7 +497,8 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
       <button onclick="mobNext()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--forest);padding:4px 8px;font-family:inherit">›</button>
     </div>
     <!-- 멤버별 업무 목록 -->
-    <div id="mob-content" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:10px 12px 40px;display:flex;flex-direction:column;gap:10px;min-height:0;height:0"></div>
+    <div style="flex:1;position:relative;overflow:hidden;min-height:0">
+    <div id="mob-content" style="flex:1;overflow-y:scroll;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:10px 12px 60px;display:flex;flex-direction:column;gap:10px;position:absolute;top:0;left:0;right:0;bottom:0"></div>
   </div>
 
   <!-- 업무 모달 -->
@@ -1604,12 +1605,5 @@ document.getElementById('ti').addEventListener('keydown',e=>{if(e.key==='Enter'&
 document.getElementById('note-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addNoteItem()}});
 // auth.onAuthStateChanged → loadFromFirestore() → renderAll() 자동 호출
 
-// ─── 터치 스와이프 (모바일 날짜 이동) ───
-let touchStartX=0;
-document.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;},{passive:true});
-document.addEventListener('touchend',e=>{
-  if(!isMobile())return;
-  const diff=e.changedTouches[0].clientX-touchStartX;
-  if(Math.abs(diff)>60){diff<0?mobNext():mobPrev();}
-},{passive:true});
+// 스와이프 제거 — 날짜 이동은 버튼으로만
 </script>
