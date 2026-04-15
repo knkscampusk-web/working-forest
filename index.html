@@ -716,17 +716,13 @@ let _unsubTasks=null,_unsubConfig=null;
 function doSignIn(){
   document.getElementById('auth-error').textContent='';
   const provider=new firebase.auth.GoogleAuthProvider();
-  // localStorage persistence 설정 후 로그인 (Safari sessionStorage 문제 해결)
   auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>{
-    if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)){
-      return auth.signInWithRedirect(provider);
-    } else {
-      const btn=document.getElementById('signin-btn');
-      if(btn)btn.textContent='로그인 중...';
-      return auth.signInWithPopup(provider);
-    }
+    // iOS PWA standalone + Android: popup 방식 (redirect는 튕김)
+    return auth.signInWithPopup(provider);
   }).catch(err=>{
-    document.getElementById('auth-error').textContent='로그인 오류: '+err.message;
+    const errEl=document.getElementById('auth-error');
+    if(errEl)errEl.textContent='로그인 오류: '+err.message;
+    console.error('로그인 오류:', err);
   });
 }
 
