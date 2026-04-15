@@ -190,7 +190,7 @@ html,body{margin:0;padding:0;width:100%;height:100%}
 .dlg-confirm{flex:2;background:var(--forest);color:#F5EFE0;border:none;padding:8px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;transition:opacity .12s}
 .dlg-confirm:hover{opacity:.87}.dlg-confirm:disabled{background:var(--tan);color:#fff;cursor:default}
 /* 업무 모달 */
-.mbo{display:none;position:absolute;inset:0;background:rgba(30,20,10,.55);align-items:center;justify-content:center;z-index:50;border-radius:16px;user-select:text;-webkit-user-select:text}
+.mbo{display:none;position:fixed;inset:0;background:rgba(30,20,10,.55);align-items:center;justify-content:center;z-index:100000;border-radius:0;user-select:text;-webkit-user-select:text}
 .mbo.on{display:flex}
 .mod{width:420px;max-width:92%;max-height:92%;overflow-y:auto;background:var(--cream);border-radius:18px;box-shadow:0 8px 40px rgba(30,20,10,.28);border:2px solid var(--tan)}
 .mod-bar{height:5px;border-radius:18px 18px 0 0;width:100%}
@@ -667,6 +667,31 @@ html,body{margin:0;padding:0;width:100%;height:100%}
   <div class="push-wrap" id="push-wrap"></div>
   <div class="toast" id="toast"></div>
 </div>
+
+<!-- ★ 모바일 전용 앱 (#wb 완전히 밖) ★ -->
+<div id="mob-app" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--parchment);flex-direction:column;z-index:99999">
+  <div style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--forest);flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+      <span style="font-size:20px">🌳</span>
+      <span style="font-family:'Bagel Fat One','Malgun Gothic',sans-serif;font-weight:900;font-size:18px;color:#F5EFE0">노동숲</span>
+    </div>
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px">
+      <button onclick="mobPrev()" style="background:rgba(255,255,255,.2);border:none;color:#F5EFE0;width:28px;height:28px;border-radius:8px;font-size:18px;cursor:pointer;font-family:inherit">&#8249;</button>
+      <div id="mob-prd" style="font-size:12px;font-weight:700;color:#F5EFE0;min-width:80px;text-align:center"></div>
+      <button onclick="mobNext()" style="background:rgba(255,255,255,.2);border:none;color:#F5EFE0;width:28px;height:28px;border-radius:8px;font-size:18px;cursor:pointer;font-family:inherit">&#8250;</button>
+      <button onclick="mobToday()" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#F5EFE0;padding:4px 8px;border-radius:14px;font-size:10px;cursor:pointer;font-family:inherit">오늘</button>
+    </div>
+    <div style="display:flex;gap:4px;flex-shrink:0">
+      <button onclick="toggleNoticeModal()" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#F5EFE0;padding:4px 8px;border-radius:14px;font-size:12px;cursor:pointer;font-family:inherit">📋</button>
+      <button id="settings-btn" onclick="document.getElementById('settings-pop').classList.toggle('on')" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#F5EFE0;width:26px;height:26px;border-radius:8px;font-size:13px;cursor:pointer">🌿</button>
+    </div>
+  </div>
+  <div id="mob-notes-bar" style="display:none;background:rgba(59,107,78,.1);padding:5px 14px;font-size:12px;color:var(--forest);flex-shrink:0;border-bottom:1px solid var(--tan)"></div>
+  <div id="mob-scroll" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:10px 12px 80px">
+    <div id="mob-cards" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
+
 
 <script>
 // ─── Firebase 초기화 ───
@@ -1358,7 +1383,14 @@ function isMobile(){return window.innerWidth<=768}
 let mobAnchor=new Date();
 
 function renderAll(){
-  if(isMobile()){renderMobileDay();return;}
+  if(isMobile()){
+    document.getElementById('wb').style.display='none';
+    document.getElementById('mob-app').style.display='flex';
+    renderMobileDay();
+    return;
+  }
+  document.getElementById('wb').style.display='flex';
+  document.getElementById('mob-app').style.display='none';
   view==='week'?renderWeek():renderMonth();
 }
 
@@ -1372,8 +1404,7 @@ function renderMobileDay(){
   const ds=fmt(mobAnchor);
   const d=mobAnchor;
   const dow=['일','월','화','수','목','금','토'][d.getDay()];
-  // 헤더 prd 업데이트
-  document.getElementById('prd').textContent=`${d.getMonth()+1}월 ${d.getDate()}일 (${dow})`;
+  document.getElementById('mob-prd').textContent=`${d.getMonth()+1}월 ${d.getDate()}일 (${dow})`;
   const isT=ds===TS,isHol=HOLIDAYS.has(ds)||d.getDay()===0,isSat=d.getDay()===6;
   const color=isT?'var(--today-border)':isHol?'#C0392B':isSat?'#2980B9':'var(--text)';
   document.getElementById('mob-date-label').innerHTML=
@@ -1381,7 +1412,10 @@ function renderMobileDay(){
     (isT?'<span style="background:var(--today-border);color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;margin-left:6px">오늘</span>':'');
 
   const notes=dayNotes[ds]||[];
-  const notesHtml=notes.length?`<div style="background:rgba(59,107,78,.08);border-radius:8px;padding:7px 11px;font-size:12px;color:var(--forest);margin-bottom:8px">${notes.map(n=>'🗓 '+esc(n)).join('<br>')}</div>`:'';
+  const notesBar=document.getElementById('mob-notes-bar');
+  if(notes.length){notesBar.style.display='block';notesBar.innerHTML=notes.map(n=>'🗓 '+esc(n)).join(' &nbsp;·&nbsp; ');}
+  else notesBar.style.display='none';
+  const notesHtml='';
 
   const myMidNow=getMyMid();
   const sortedM=[...MEMBERS];
@@ -1432,7 +1466,7 @@ function renderMobileDay(){
       }
     </div>`;
   });
-  document.getElementById('mob-content').innerHTML=html;
+  document.getElementById('mob-cards').innerHTML=html;
 }
 
 function mobToggle(mid){
@@ -1442,6 +1476,7 @@ function mobToggle(mid){
 
 function mobPrev(){mobAnchor=addD(mobAnchor,-1);renderAll();}
 function mobNext(){mobAnchor=addD(mobAnchor,1);renderAll();}
+function mobToday(){mobAnchor=new Date();renderAll();}
 
 // 리사이즈 시 뷰 전환
 window.addEventListener('resize',()=>renderAll());
