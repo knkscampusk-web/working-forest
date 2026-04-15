@@ -484,7 +484,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
   </div>
   <div id="mv" style="display:none"><div class="mcw" id="mcw"></div></div>
   <!-- 모바일 일간 뷰 -->
-  <div id="mobile-day-view" style="display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0;background:var(--parchment)">
+  <div id="mobile-day-view" style="display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0;background:var(--parchment);height:0">
     <!-- 날짜 네비게이션 -->
     <div id="mob-date-nav" style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--sand);border-bottom:2px solid var(--tan);flex-shrink:0">
       <button onclick="mobPrev()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--forest);padding:4px 8px;font-family:inherit">‹</button>
@@ -492,7 +492,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
       <button onclick="mobNext()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--forest);padding:4px 8px;font-family:inherit">›</button>
     </div>
     <!-- 멤버별 업무 목록 -->
-    <div id="mob-content" style="flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:10px"></div>
+    <div id="mob-content" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px;display:flex;flex-direction:column;gap:10px;min-height:0;height:0"></div>
   </div>
 
   <!-- 업무 모달 -->
