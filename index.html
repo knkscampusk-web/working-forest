@@ -683,7 +683,7 @@ html,body{margin:0;padding:0;width:100%;height:100%}
     </div>
     <div style="display:flex;gap:4px;flex-shrink:0">
       <button onclick="toggleNoticeModal()" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#F5EFE0;padding:4px 8px;border-radius:14px;font-size:12px;cursor:pointer;font-family:inherit">📋</button>
-      <button id="settings-btn" onclick="document.getElementById('settings-pop').classList.toggle('on')" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#F5EFE0;width:26px;height:26px;border-radius:8px;font-size:13px;cursor:pointer">🌿</button>
+      <button onclick="document.getElementById('settings-pop').classList.toggle('on')" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#F5EFE0;width:26px;height:26px;border-radius:8px;font-size:13px;cursor:pointer">🌿</button>
     </div>
   </div>
   <div id="mob-notes-bar" style="display:none;background:rgba(59,107,78,.1);padding:5px 14px;font-size:12px;color:var(--forest);flex-shrink:0;border-bottom:1px solid var(--tan)"></div>
@@ -1384,12 +1384,10 @@ let mobAnchor=new Date();
 
 function renderAll(){
   if(isMobile()){
-    document.getElementById('wb').style.display='none';
     document.getElementById('mob-app').style.display='flex';
     renderMobileDay();
     return;
   }
-  document.getElementById('wb').style.display='flex';
   document.getElementById('mob-app').style.display='none';
   view==='week'?renderWeek():renderMonth();
 }
@@ -1398,9 +1396,7 @@ function renderAll(){
 const mobCollapsed={};
 
 function renderMobileDay(){
-  document.getElementById('sv').style.display='none';
-  document.getElementById('mv').style.display='none';
-  document.getElementById('mobile-day-view').style.display='flex';
+  // mob-app이 renderAll에서 제어함
   const ds=fmt(mobAnchor);
   const d=mobAnchor;
   const dow=['일','월','화','수','목','금','토'][d.getDay()];
