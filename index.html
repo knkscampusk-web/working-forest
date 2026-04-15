@@ -351,7 +351,12 @@ html,body{margin:0;padding:0;width:100%;height:100%}
 /* 모바일 반응형 */
 @media(max-width:768px){
   .mob-hide{display:none!important}
-  #wb{border-radius:0;border:none;height:100dvh}
+  #wb{border-radius:0;border:none;height:100dvh;overflow:hidden}
+  #mobile-day-view{overflow:hidden}
+  #mob-content{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;
+    flex:1!important;min-height:0!important;
+    max-height:calc(100dvh - 110px)!important;
+    padding-bottom:60px!important}
   /* 헤더 - 찌그러짐 방지 */
   .wbh{padding:8px 10px;min-height:50px;flex-wrap:nowrap;gap:4px;overflow:hidden}
   .app-logo{gap:6px;flex-shrink:0}
