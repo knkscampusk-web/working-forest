@@ -348,22 +348,27 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
 @media(max-width:768px){
   .mob-hide{display:none!important}
   #wb{border-radius:0;border:none;height:100dvh}
-  /* 헤더 */
-  .wbh{padding:8px 12px;min-height:50px;flex-wrap:nowrap;gap:6px}
-  .app-logo-icon{font-size:22px}
-  .app-logo-main{font-size:20px}
+  /* 헤더 - 찌그러짐 방지 */
+  .wbh{padding:8px 10px;min-height:50px;flex-wrap:nowrap;gap:4px;overflow:hidden}
+  .app-logo{gap:6px;flex-shrink:0}
+  .app-logo-icon{font-size:20px;flex-shrink:0}
+  .app-logo-main{font-size:18px}
   .app-logo-sub{display:none}
+  .tbl{gap:5px;flex-shrink:0}
+  .tbr{gap:4px;flex-shrink:0}
   .hdiv{display:none}
-  .prd{font-size:12px;min-width:80px}
-  .nb{width:24px;height:24px;font-size:13px}
-  .tdb{font-size:10px;padding:4px 7px}
-  .import-btn{font-size:9px;padding:3px 7px}
-  .duty-wrap{padding:3px 7px;gap:4px}
-  .duty-label{display:none}
-  .duty-emoji{font-size:20px}
-  .duty-name{font-size:10px}
+  .prd{font-size:12px;min-width:70px}
+  .nb{width:26px;height:26px;font-size:14px;flex-shrink:0}
+  .tdb{font-size:10px;padding:4px 7px;flex-shrink:0}
+  .import-btn{display:none}
+  /* 등록당번 숨김 */
+  .duty-wrap{display:none!important}
+  /* 공지 버튼 축소 */
+  .board-btn{padding:5px 8px;font-size:12px}
   .board-btn span.btn-txt{display:none}
   .vsw{display:none}
+  /* 설정 버튼 */
+  .settings-btn{width:26px;height:26px;font-size:13px}
   /* 모바일에서 주간 테이블 숨기고 일간 뷰 표시 */
   #sv{display:none!important}
   #mv{display:none}
@@ -372,7 +377,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
   .mod{width:100%;max-width:100%;max-height:96dvh;border-radius:16px 16px 0 0;position:fixed;bottom:0;left:0;right:0;margin:0}
   .mbo{align-items:flex-end;border-radius:0}
   /* 설정 팝업 */
-  .settings-pop{width:calc(100vw - 28px);right:14px}
+  .settings-pop{width:calc(100vw - 28px);right:8px}
 }
 </style>
 
@@ -484,7 +489,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
   </div>
   <div id="mv" style="display:none"><div class="mcw" id="mcw"></div></div>
   <!-- 모바일 일간 뷰 -->
-  <div id="mobile-day-view" style="display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0;background:var(--parchment);height:0">
+  <div id="mobile-day-view" style="display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0;background:var(--parchment)">
     <!-- 날짜 네비게이션 -->
     <div id="mob-date-nav" style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--sand);border-bottom:2px solid var(--tan);flex-shrink:0">
       <button onclick="mobPrev()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--forest);padding:4px 8px;font-family:inherit">‹</button>
@@ -492,7 +497,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
       <button onclick="mobNext()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--forest);padding:4px 8px;font-family:inherit">›</button>
     </div>
     <!-- 멤버별 업무 목록 -->
-    <div id="mob-content" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px;display:flex;flex-direction:column;gap:10px;min-height:0;height:0"></div>
+    <div id="mob-content" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:10px 12px 40px;display:flex;flex-direction:column;gap:10px;min-height:0;height:0"></div>
   </div>
 
   <!-- 업무 모달 -->
@@ -1341,6 +1346,8 @@ function renderMobileDay(){
   const ds=fmt(mobAnchor);
   const d=mobAnchor;
   const dow=['일','월','화','수','목','금','토'][d.getDay()];
+  // 헤더 prd 업데이트
+  document.getElementById('prd').textContent=`${d.getMonth()+1}월 ${d.getDate()}일 (${dow})`;
   const isT=ds===TS,isHol=HOLIDAYS.has(ds)||d.getDay()===0,isSat=d.getDay()===6;
   const color=isT?'var(--today-border)':isHol?'#C0392B':isSat?'#2980B9':'var(--text)';
   document.getElementById('mob-date-label').innerHTML=
