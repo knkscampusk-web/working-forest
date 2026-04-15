@@ -9,7 +9,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <style>
-html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
+html,body{margin:0;padding:0;width:100%;height:100%}
+/* 데스크탑(Electron)에서는 overflow:hidden, 웹 브라우저에서는 해제 */
+@media not all and (display-mode:standalone){
+  html,body{overflow:hidden}
+}
 @import url('https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Noto+Sans+KR:wght@400;500;700&display=swap');
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -489,7 +493,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
   </div>
   <div id="mv" style="display:none"><div class="mcw" id="mcw"></div></div>
   <!-- 모바일 일간 뷰 -->
-  <div id="mobile-day-view" style="display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0;background:var(--parchment)">
+  <div id="mobile-day-view" style="display:none;flex-direction:column;flex:1;min-height:0;background:var(--parchment)">
     <!-- 날짜 네비게이션 -->
     <div id="mob-date-nav" style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--sand);border-bottom:2px solid var(--tan);flex-shrink:0">
       <button onclick="mobPrev()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--forest);padding:4px 8px;font-family:inherit">‹</button>
@@ -497,9 +501,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
       <button onclick="mobNext()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--forest);padding:4px 8px;font-family:inherit">›</button>
     </div>
     <!-- 멤버별 업무 목록 -->
-    <div style="flex:1;position:relative;overflow:hidden;min-height:0">
-    <div id="mob-content" style="flex:1;overflow-y:scroll;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:10px 12px 60px;display:flex;flex-direction:column;gap:10px;position:absolute;top:0;left:0;right:0;bottom:0"></div>
-  </div>
+    <div id="mob-content" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 60px;display:flex;flex-direction:column;gap:10px;min-height:0"></div>
 
   <!-- 업무 모달 -->
   <div class="mbo" id="mbo">
